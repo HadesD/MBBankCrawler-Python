@@ -21,7 +21,9 @@ import mbbank
 import datetime
 
 async def main():
-    mb = mbbank.MbBank(username="<account number>", password="<account password>" [, tesseract_path="path/to/tesseract"])
+    mb = mbbank.MbBank(username="<account number>", password="<account password>", tesseract_path="path/to/tesseract")
+    await mb.authenticate() # Must do
+
     daynow = datetime.datetime.now()
     lasttime = daynow - datetime.timedelta(weeks=4*3) # maximum time 3 Month
     await mb.getTransactionAccountHistory(from_date=lasttime, to_date=daynow)

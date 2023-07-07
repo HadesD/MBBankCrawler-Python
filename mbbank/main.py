@@ -126,7 +126,7 @@ class MBBank:
         # print(self._userinfo)
         cust_acctList = self._userinfo['cust']['acct_list']
         for k, v in cust_acctList.items():
-            print(v)
+            # print(v)
             json_data = {
                 'accountNo': v['acctNo'],
                 'fromDate': from_date.strftime("%d/%m/%Y"),
@@ -135,7 +135,7 @@ class MBBank:
             data_out = await self._req(
                 "https://online.mbbank.com.vn/retail-web-transactionservice/transaction/getTransactionAccountHistory",
                 json=json_data)
-            print(data_out)
+            # print(data_out)
         return data_out
 
     async def getBalance(self):
