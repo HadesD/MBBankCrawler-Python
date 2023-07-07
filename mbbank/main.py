@@ -100,7 +100,7 @@ class MBBank:
             # print(f"Captcha: {text}")
             # img.save(f"{text}.png", 'PNG')
             if len(text) != 6 or not text.isalnum():
-                pass
+                continue
             payload = {
                 "userId": self.__userid,
                 "password": hashlib.md5(self.__password.encode()).hexdigest(),
