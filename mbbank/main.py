@@ -8,6 +8,7 @@ import typing
 import io
 import platform
 import aiohttp
+import time
 
 headers_default = {
     'Cache-Control': 'no-cache',
@@ -96,7 +97,7 @@ class MBBank:
                         pix[x, y] = (255, 255, 255, 255)
             text = pytesseract.image_to_string(img)
             text = re.sub(r"\s+", "", text, flags=re.MULTILINE)
-            print(f"Captcha: {text}")
+            # print(f"Captcha: {text}")
             # img.save(f"{text}.png", 'PNG')
             if len(text) != 6 or not text.isalnum():
                 pass
@@ -117,6 +118,7 @@ class MBBank:
                 self._userinfo = data_out
                 return
             elif data_out["result"]["responseCode"] == "GW283":
+                time.sleep(3)
                 pass
             else:
                 err_out = data_out["result"]
@@ -132,6 +134,7 @@ class MBBank:
                 'fromDate': from_date.strftime("%d/%m/%Y"),
                 'toDate': to_date.strftime("%d/%m/%Y"),  # max 3 months
             }
+            # print(json_data)
             data_out = await self._req(
                 "https://online.mbbank.com.vn/retail-web-transactionservice/transaction/getTransactionAccountHistory",
                 json=json_data)
