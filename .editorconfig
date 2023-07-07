@@ -1,0 +1,4 @@
+root = true
+[*.py]
+tab_width = 4
+indent_size = space

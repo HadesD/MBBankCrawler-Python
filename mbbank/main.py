@@ -26,7 +26,8 @@ def get_now_time():
 
 
 class MBBank:
-    deviceIdCommon = f'yeumtmdx-mbib-0000-0000-{get_now_time()}'
+    # deviceIdCommon = f'yeumtmdx-mbib-0000-0000-{get_now_time()}'
+    deviceIdCommon = f'52hv0dv1-mbib-0000-0000-{get_now_time()}'
 
     def __init__(self, *, username, password, tesseract_path=None):
         self.__userid = username
@@ -36,6 +37,7 @@ class MBBank:
         self.sessionId = None
         self._userinfo = None
         self._temp = {}
+        self.acct_list = []
 
     async def _req(self, url, *, json={}, headers={}):
         while True:
@@ -62,7 +64,7 @@ class MBBank:
                 await self.authenticate()
             else:
                 err_out = data_out["result"]
-                raise Exception(f"{err_out['responseCode']} | {err_out['message']}")
+                raise Exception(f"{err_out['responseCode']} | {err_out['message']} | {url}")
         return data_out
 
     async def authenticate(self):
@@ -94,6 +96,10 @@ class MBBank:
                         pix[x, y] = (255, 255, 255, 255)
             text = pytesseract.image_to_string(img)
             text = re.sub(r"\s+", "", text, flags=re.MULTILINE)
+            print(f"Captcha: {text}")
+            # img.save(f"{text}.png", 'PNG')
+            if len(text) != 6 or not text.isalnum():
+                pass
             payload = {
                 "userId": self.__userid,
                 "password": hashlib.md5(self.__password.encode()).hexdigest(),
@@ -117,14 +123,19 @@ class MBBank:
                 raise Exception(f"{err_out['responseCode']} | {err_out['message']}")
 
     async def getTransactionAccountHistory(self, *, from_date: datetime.datetime, to_date: datetime.datetime):
-        json_data = {
-            'accountNo': self.__userid,
-            'fromDate': from_date.strftime("%d/%m/%Y"),
-            'toDate': to_date.strftime("%d/%m/%Y"),  # max 3 months
-        }
-        data_out = await self._req(
-            "https://online.mbbank.com.vn/retail-web-transactionservice/transaction/getTransactionAccountHistory",
-            json=json_data)
+        # print(self._userinfo)
+        cust_acctList = self._userinfo['cust']['acct_list']
+        for k, v in cust_acctList.items():
+            print(v)
+            json_data = {
+                'accountNo': v['acctNo'],
+                'fromDate': from_date.strftime("%d/%m/%Y"),
+                'toDate': to_date.strftime("%d/%m/%Y"),  # max 3 months
+            }
+            data_out = await self._req(
+                "https://online.mbbank.com.vn/retail-web-transactionservice/transaction/getTransactionAccountHistory",
+                json=json_data)
+            print(data_out)
         return data_out
 
     async def getBalance(self):
