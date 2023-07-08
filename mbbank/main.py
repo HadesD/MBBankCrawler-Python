@@ -8,7 +8,7 @@ import typing
 import io
 import platform
 import aiohttp
-import time
+import asyncio
 
 headers_default = {
     'Cache-Control': 'no-cache',
@@ -55,7 +55,12 @@ class MBBank:
             headers["X-Request-Id"] = rid
             async with aiohttp.ClientSession() as s:
                 async with s.post(url, headers=headers, json=json_data) as r:
-                    data_out = await r.json()
+                    try:
+                        data_out = await r.json()
+                    except Exception as e:
+                        print('Request error to', url, self.__userid, await r.text())
+                        await asyncio.sleep(5)
+                        continue
             if data_out["result"] is None:
                 await self.getBalance()
             elif data_out["result"]["ok"]:
@@ -84,7 +89,11 @@ class MBBank:
             async with aiohttp.ClientSession() as s:
                 async with s.post("https://online.mbbank.com.vn/retail-web-internetbankingms/getCaptchaImage",
                                   headers=headers, json=json_data) as r:
-                    data_out = await r.json()
+                    try:
+                        data_out = await r.json()
+                    except Exception as e:
+                        print('Get captcha image error', self.__userid, await r.text())
+                        continue
             img_byte = io.BytesIO(base64.b64decode(data_out["imageString"]))
             img = Image.open(img_byte)
             img = img.convert('RGBA')
@@ -112,13 +121,17 @@ class MBBank:
             async with aiohttp.ClientSession() as s:
                 async with s.post("https://online.mbbank.com.vn/retail_web/internetbanking/doLogin",
                                   headers=headers_default, json=payload) as r:
-                    data_out = await r.json()
+                    try:
+                        data_out = await r.json()
+                    except Exception as e:
+                        print('Login error', self.__userid, await r.text())
+                        continue
             if data_out["result"]["ok"]:
                 self.sessionId = data_out["sessionId"]
                 self._userinfo = data_out
                 return
             elif data_out["result"]["responseCode"] == "GW283":
-                time.sleep(3)
+                await asyncio.sleep(5)
                 pass
             else:
                 err_out = data_out["result"]
