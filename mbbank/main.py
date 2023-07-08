@@ -140,6 +140,7 @@ class MBBank:
     async def getTransactionAccountHistory(self, *, from_date: datetime.datetime, to_date: datetime.datetime):
         # print(self._userinfo)
         cust_acctList = self._userinfo['cust']['acct_list']
+        data_out = []
         for k, v in cust_acctList.items():
             # print(v)
             json_data = {
@@ -148,10 +149,11 @@ class MBBank:
                 'toDate': to_date.strftime("%d/%m/%Y"),  # max 3 months
             }
             # print(json_data)
-            data_out = await self._req(
+            data_out.append(await self._req(
                 "https://online.mbbank.com.vn/retail-web-transactionservice/transaction/getTransactionAccountHistory",
-                json=json_data)
+                json=json_data))
             # print(data_out)
+            # yield data_out
         return data_out
 
     async def getBalance(self):
