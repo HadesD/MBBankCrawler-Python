@@ -9,6 +9,12 @@ import io
 import platform
 import aiohttp
 import asyncio
+import logging
+
+logging.basicConfig(
+    format='%(asctime)s %(levelname)-8s %(message)s',
+    level=logging.INFO,
+    datefmt='%Y-%m-%d %H:%M:%S')
 
 headers_default = {
     'Cache-Control': 'no-cache',
@@ -58,7 +64,7 @@ class MBBank:
                     try:
                         data_out = await r.json()
                     except Exception as e:
-                        print('Request error to', url, self.__userid, await r.text())
+                        logging.error(f'Request error {self.__userid} {url} {await r.text()}')
                         await asyncio.sleep(5)
                         continue
             if data_out["result"] is None:
@@ -92,7 +98,7 @@ class MBBank:
                     try:
                         data_out = await r.json()
                     except Exception as e:
-                        print('Get captcha image error', self.__userid, await r.text())
+                        logging.error(f'Get captcha image error: {self.__userid} {await r.text()}')
                         continue
             img_byte = io.BytesIO(base64.b64decode(data_out["imageString"]))
             img = Image.open(img_byte)
@@ -124,7 +130,7 @@ class MBBank:
                     try:
                         data_out = await r.json()
                     except Exception as e:
-                        print('Login error', self.__userid, await r.text())
+                        logging.error(f'Login error {self.__userid} {await r.text()}')
                         continue
             if data_out["result"]["ok"]:
                 self.sessionId = data_out["sessionId"]
