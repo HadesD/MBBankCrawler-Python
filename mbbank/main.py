@@ -133,12 +133,14 @@ class MBBank:
                         logging.error(f'Login error {self.__userid} {await r.text()}')
                         continue
             if data_out["result"]["ok"]:
+                if 'sessionId' not in data_out or 'cust' not in data_out:
+                    await asyncio.sleep(5)
+                    continue
                 self.sessionId = data_out["sessionId"]
                 self._userinfo = data_out
                 return
             elif data_out["result"]["responseCode"] == "GW283":
                 await asyncio.sleep(5)
-                pass
             else:
                 err_out = data_out["result"]
                 raise Exception(f"{err_out['responseCode']} | {err_out['message']}")
