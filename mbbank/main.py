@@ -92,14 +92,21 @@ class MBBank:
             }
             headers = headers_default.copy()
             headers["X-Request-Id"] = rid
+            data_out = {}
             async with aiohttp.ClientSession() as s:
                 async with s.post("https://online.mbbank.com.vn/retail-web-internetbankingms/getCaptchaImage",
                                   headers=headers, json=json_data) as r:
                     try:
                         data_out = await r.json()
+                        # logging.warning(data_out)
                     except Exception as e:
                         logging.error(f'Get captcha image error: {self.__userid} {await r.text()}')
                         continue
+            if 'imageString' not in data_out:
+                logging.error(f'Can not found any captcha')
+                logging.error(data_out)
+                await asyncio.sleep(5)
+                continue
             img_byte = io.BytesIO(base64.b64decode(data_out["imageString"]))
             img = Image.open(img_byte)
             img = img.convert('RGBA')
