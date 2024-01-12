@@ -163,6 +163,14 @@ class MBBank:
                     'accountNo': v['acctNo'],
                     'fromDate': from_date.strftime("%d/%m/%Y"),
                     'toDate': to_date.strftime("%d/%m/%Y"),  # max 3 months
+                    'Dnt': 1,
+                    'Sec-Ch-Ua': '"Not_A Brand";v="8", "Chromium";v="120", "Google Chrome";v="120"',
+                    'Sec-Ch-Ua-Mobile': '?0',
+                    'Sec-Ch-Ua-Platform': "Windows",
+                    'Sec-Fetch-Dest': 'empty',
+                    'Sec-Fetch-Mode': 'cors',
+                    'Sec-Fetch-Site': 'same-origin',
+                    'Referer': 'https://online.mbbank.com.vn/information-account/source-account'
                 }
                 # print(json_data)
                 data_out.append(await self._req(
