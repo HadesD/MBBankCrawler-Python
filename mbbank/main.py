@@ -166,7 +166,7 @@ class MBBank:
                 }
                 # print(json_data)
                 data_out.append(await self._req(
-                    "https://online.mbbank.com.vn/retail-web-transactionservice/transaction/get-account-transaction-history",
+                    "https://online.mbbank.com.vn/retail-transactionms/transactionms/get-account-transaction-history",
                     json=json_data))
                 # print(data_out)
                 # yield data_out
