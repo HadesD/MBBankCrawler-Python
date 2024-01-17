@@ -34,7 +34,8 @@ def get_now_time():
 
 class MBBank:
     # deviceIdCommon = f'yeumtmdx-mbib-0000-0000-{get_now_time()}'
-    deviceIdCommon = f'52hv0dv1-mbib-0000-0000-{get_now_time()}'
+    # deviceIdCommon = f'52hv0dv1-mbib-0000-0000-{get_now_time()}'
+    deviceIdCommon = f'ricofn03-mbib-0000-0000-{get_now_time()}'
 
     def __init__(self, *, username, password, tesseract_path=None):
         self.__userid = username
@@ -57,8 +58,11 @@ class MBBank:
                 'deviceIdCommon': self.deviceIdCommon,
             }
             json_data.update(json)
+            #logging.info(json_data)
             headers.update(headers_default)
             headers["X-Request-Id"] = rid
+            headers["Deviceid"] = self.deviceIdCommon
+            headers["RefNo"] = rid
             async with aiohttp.ClientSession() as s:
                 async with s.post(url, headers=headers, json=json_data) as r:
                     try:
