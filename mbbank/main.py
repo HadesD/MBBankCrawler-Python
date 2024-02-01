@@ -25,6 +25,7 @@ headers_default = {
     "Referer": "https://online.mbbank.com.vn/"
 }
 
+timeoutDefault = aiohttp.ClientTimeout(total=45)
 
 def get_now_time():
     now = datetime.datetime.now()
@@ -64,7 +65,7 @@ class MBBank:
             headers["Deviceid"] = self.deviceIdCommon
             headers["RefNo"] = rid
             async with aiohttp.ClientSession() as s:
-                async with s.post(url, headers=headers, json=json_data) as r:
+                async with s.post(url, headers=headers, json=json_data, timeout=timeoutDefault) as r:
                     try:
                         data_out = await r.json()
                     except Exception as e:
@@ -99,7 +100,7 @@ class MBBank:
             data_out = {}
             async with aiohttp.ClientSession() as s:
                 async with s.post("https://online.mbbank.com.vn/retail-web-internetbankingms/getCaptchaImage",
-                                  headers=headers, json=json_data) as r:
+                                  headers=headers, json=json_data, timeout=timeoutDefault) as r:
                     try:
                         data_out = await r.json()
                         # logging.warning(data_out)
@@ -137,7 +138,7 @@ class MBBank:
             }
             async with aiohttp.ClientSession() as s:
                 async with s.post("https://online.mbbank.com.vn/retail_web/internetbanking/doLogin",
-                                  headers=headers_default, json=payload) as r:
+                                  headers=headers_default, json=payload, timeout=timeoutDefault) as r:
                     try:
                         data_out = await r.json()
                     except Exception as e:
@@ -270,7 +271,7 @@ class MBBank:
         tok = await self.getServiceToken()
         headers["Authorization"] = tok["type"].capitalize() + " " + tok["token"]
         async with aiohttp.ClientSession() as s:
-            async with s.post("https://mbcard.mbbank.com.vn:8446/mbcardgw/internet/cardinfo/v1_0/generateid", headers=headers, json=json_data) as r:
+            async with s.post("https://mbcard.mbbank.com.vn:8446/mbcardgw/internet/cardinfo/v1_0/generateid", headers=headers, json=json_data, timeout=timeoutDefault) as r:
                return await r.json()
 
     async def getAccountByPhone(self, phone:str):
